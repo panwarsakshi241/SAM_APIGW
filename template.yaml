@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      EndpointConfiguration: 
+        Type: REGIONAL
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title: 'HTTP Proxy API'
+        paths:
+          /Resource1:
+            get:
+              responses:
+                '200':
+                  description: 'Success'
+                  schema:
+                    type: 'object'
+                    properties:
+                      message:
+                        type: 'string'
+              x-amazon-apigateway-integration:
+                uri: 'https://www.google.com'
+                httpMethod: ANY
+                type: http_proxy
+                connectionType: INTERNET
+          /Resource2:
+            get:
+              responses:
+                '200':
+                  description: 'Success'
+                  schema:
+                    type: 'object'
+                    properties:
+                      message:
+                        type: 'string'
+              x-amazon-apigateway-integration:
+                uri: 'https://www.google.com'
+                httpMethod: GET
+                type: http_proxy
+                connectionType: INTERNET
+          /Resource2/Reaource4:
+            get:
+              responses:
+                '200':
+                  description: 'Success'
+                  schema:
+                    type: 'object'
+                    properties:
+                      message:
+                        type: 'string'
+              x-amazon-apigateway-integration:
+                uri: 'https://www.google.com/'
+                httpMethod: GET
+                type: http_proxy
+                connectionType: INTERNET
+            /Resource1:
+              get:
+
+        x-amazon-apigateway-policy:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource: execute-api:/*/*/*
+  # HelloWorldFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: hello_world/
+  #     Handler: app.lambda_handler
+  #     Runtime: python3.9
+  #     Architectures:
+  #     - x86_64
+  #     Events:
+  #       HelloWorld:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /hello
+  #           Method: get
+  
+
+Outputs:
+  ApiEndpoint:
+    Description: API endpoint URL
+    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
